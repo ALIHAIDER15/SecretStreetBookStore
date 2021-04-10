@@ -12,6 +12,10 @@ namespace BulkyBook.Repository.IRepository
 
         IProductyRepository Product { get; }
 
+        ICompanyRepository Company { get; }
+
+        IApplicationUserRepository ApplicationUser { get; }
+
         ISP_Call SP_Call { get; }
 
 

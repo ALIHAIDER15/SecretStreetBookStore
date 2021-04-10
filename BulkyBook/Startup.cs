@@ -32,10 +32,18 @@ namespace BulkyBook
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+         
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
+
+            //HOW THIS  services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders();  METHOD WORKS
+            //AddIdentity is extension method jo IdentityUser and IdentityRole ko register karta hai IServiceCollection IOC mai
+            // Then IdentityBuilder ko return krta hai jis k ander method para hai AddDefaultTokenProviders(); ka jo nehcay use
+            //huwa hai then ye i guess IdentityBuilder ko register krta hai IServiceCollection mai   
+            services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

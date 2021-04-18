@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using BulkyBook.DataAccess.Data;
 using BulkyBook.Repository.IRepository;
 using BulkyBook.Repository;
+using BulkyBook.Utility;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace BulkyBook
 {
@@ -43,6 +45,44 @@ namespace BulkyBook
             //huwa hai then ye i guess IdentityBuilder ko register krta hai IServiceCollection mai   
             services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
             //services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSingleton<IEmailSender, EmailSender>();
+
+
+
+
+
+            // CHANGING THE DEFAULT PASSWORD VALIDATION FROM IDENTITY WITH DEFFERNT TYPES OF METHDS
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            //PASSING DELEGATE TO FUNCTION USING SIMPLE METHOD
+            //static void Display(IdentityOptions options)
+            //{
+            //    options.Password.RequiredLength = 10;
+            //}
+            //Action<IdentityOptions> hello1 = Display;
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+
+            ////PASSING DELEGATE TO FUNCTION USING AMYPUMOUES METHOD
+            //Action<IdentityOptions> hello2 = delegate (IdentityOptions options)
+            //{
+            //    options.Password.RequiredLength = 10;
+
+            //};
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+            ////PASSING DELEGATE TO FUNCTION USING LAMDA EXPRESSION
+            //Action<IdentityOptions> hello3 = (options) => options.Password.RequiredLength = 10;
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+
+            ////PASSING TO METHOD
+            //services.Configure<IdentityOptions>(hello3);
+            /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
         }
 

@@ -16,6 +16,7 @@ using BulkyBook.Repository;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
+
 namespace BulkyBook
 {
     public class Startup
@@ -39,6 +40,7 @@ namespace BulkyBook
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
 
+
             //HOW THIS  services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders();  METHOD WORKS
             //AddIdentity is extension method jo IdentityUser and IdentityRole ko register karta hai IServiceCollection IOC mai
             // Then IdentityBuilder ko return krta hai jis k ander method para hai AddDefaultTokenProviders(); ka jo nehcay use
@@ -49,7 +51,26 @@ namespace BulkyBook
 
 
 
+            //Setting up redirect pages when someone try to  access auouthorize pages
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
 
+
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "898819949926-rcsi9ctk7mlo57b62ho7d4k5lm925h0g.apps.googleusercontent.com";
+                options.ClientSecret = "Xm0czwL3WdR0CVNOZ8crZi96";
+            });
+
+            services.AddAuthentication().AddFacebook(options =>
+            {
+                options.AppId = "2994866190751606";
+                options.AppSecret = "58b7c55eed8490935dfee7319574c46a";
+            });
 
             // CHANGING THE DEFAULT PASSWORD VALIDATION FROM IDENTITY WITH DEFFERNT TYPES OF METHDS
             //////////////////////////////////////////////////////////////////////////////////////////////

@@ -6,8 +6,8 @@ using System.Text;
 
 namespace BulkyBook.Repository.IRepository
 {
-    public interface IOrderDetailsRepository : IRepository<OrderDetails>
+    public interface ICategoryRepository : IRepository<Category>
     {
-        void Update(OrderDetails obj);
+        void Update(Category category);
     }
 }

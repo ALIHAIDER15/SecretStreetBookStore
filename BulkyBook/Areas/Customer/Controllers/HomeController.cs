@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BulkyBook.DataAccess.Data;
 using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
 using BulkyBook.Repository.IRepository;
+using BulkyBook.Utility;
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,12 +26,14 @@ namespace BulkyBook.Area.Customer.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _db;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ApplicationDbContext db , IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _db=db;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Index()
@@ -37,6 +43,7 @@ namespace BulkyBook.Area.Customer.Controllers
             return View(productList);
         }
 
+        [HttpGet]
         public IActionResult Details(int id)
         {
             //GETTING PRODUCT THAT CONTAIN COVERTYPE AND CATEGORY USING DIFFERENT METHODS........................
@@ -100,6 +107,71 @@ namespace BulkyBook.Area.Customer.Controllers
        
             return View(carObj);
         }
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        [Authorize]
+        public IActionResult Details(ShoppingCart CartObject)
+        {
+
+            
+
+            CartObject.Id = 0;
+            if (ModelState.IsValid)
+            {
+                //Getting User Logined User Id
+                var UserID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                CartObject.ApplicationUserId = UserID;
+
+                ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.GetFirstOrDefault((u)=> u.ApplicationUserId == UserID && 
+                                          u.ProductId == CartObject.ProductId);
+
+                //no records exists in database for that product for that user
+                if (cartFromDb == null)
+                {
+                    _unitOfWork.ShoppingCart.Add(CartObject);
+                }
+                else
+                {
+                    cartFromDb.Count  += CartObject.Count;
+
+                    //If we Comment thr Update Method Then Entity FrameWork will automatically Update the Tables as we Get the record ,
+                    //update it,and uses save changes so automatically it will be updated
+
+                    //_unitOfWork.ShoppingCart.Update(cartFromDb);
+                }
+
+                _unitOfWork.Save();
+
+                var count = _unitOfWork.ShoppingCart.GetAll((u) => u.ApplicationUserId == CartObject.ApplicationUserId).Count();
+
+                //Storing complex object in Session varibale using Custom Implementation
+                //_httpContextAccessor.HttpContext.Session.SetObject(SD.ssShoppingCart,count);
+
+
+                //Storing int  in Session varibale using Provided Implementation
+                _httpContextAccessor.HttpContext.Session.SetInt32(SD.ssShoppingCart, count);
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            else
+            {
+                var productFromDb = _unitOfWork.Product.
+                                    GetFirstOrDefault((u) => u.Id == CartObject.ProductId, includeProperties: "Category,CoverType");
+
+                ShoppingCart carObj = new ShoppingCart()
+                {
+                    Product = productFromDb,
+                    ProductId = productFromDb.Id
+
+                };
+
+                return View(carObj);
+
+            }
+            
+        }
+
 
 
 

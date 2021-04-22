@@ -15,7 +15,7 @@ using BulkyBook.Repository.IRepository;
 using BulkyBook.Repository;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
-
+using Microsoft.AspNetCore.Http;
 
 namespace BulkyBook
 {
@@ -72,6 +72,20 @@ namespace BulkyBook
                 options.AppSecret = "58b7c55eed8490935dfee7319574c46a";
             });
 
+            //using this service to get the data of logined user
+          
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //services.AddHttpContextAccessor();
+
+            //Using Seasion 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+
             // CHANGING THE DEFAULT PASSWORD VALIDATION FROM IDENTITY WITH DEFFERNT TYPES OF METHDS
             //////////////////////////////////////////////////////////////////////////////////////////////
             //PASSING DELEGATE TO FUNCTION USING SIMPLE METHOD
@@ -125,6 +139,7 @@ namespace BulkyBook
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

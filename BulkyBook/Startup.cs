@@ -16,6 +16,7 @@ using BulkyBook.Repository;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Http;
+using Stripe;
 
 namespace BulkyBook
 {
@@ -74,7 +75,7 @@ namespace BulkyBook
 
             //using this service to get the data of logined user
           
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddHttpContextAccessor();
 
             //Using Seasion 
@@ -85,6 +86,8 @@ namespace BulkyBook
                 options.Cookie.IsEssential = true;
             });
 
+            //Adding Payment GateWay
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             // CHANGING THE DEFAULT PASSWORD VALIDATION FROM IDENTITY WITH DEFFERNT TYPES OF METHDS
             //////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,8 +142,11 @@ namespace BulkyBook
             app.UseStaticFiles();
 
             app.UseRouting();
+         
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
             app.UseSession();
 
+            //app.UseMiddleware<TestMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 

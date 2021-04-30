@@ -47,8 +47,13 @@ namespace BulkyBook.Areas.Admin.Controllers
 
             foreach (var user in UserList)
             {
-                var RoleId = UserRole.FirstOrDefault(u => u.UserId == user.Id).RoleId;
-                user.Role = Roles.FirstOrDefault(u => u.Id == RoleId).Name;
+                var RoleId = UserRole.Where(u => u.UserId == user.Id).Select(u => u.RoleId).FirstOrDefault() ?? null;
+                if (RoleId != null)
+                {
+                    user.Role = Roles.FirstOrDefault(u => u.Id == RoleId).Name;
+
+                }
+             
 
                 if (user.Company == null)
                 {

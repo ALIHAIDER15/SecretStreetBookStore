@@ -17,6 +17,8 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Stripe;
+using BulkyBook.CustomTokenProviders;
+using BulkyBook.Models;
 
 namespace BulkyBook
 {
@@ -46,9 +48,37 @@ namespace BulkyBook
             //AddIdentity is extension method jo IdentityUser and IdentityRole ko register karta hai IServiceCollection IOC mai
             // Then IdentityBuilder ko return krta hai jis k ander method para hai AddDefaultTokenProviders(); ka jo nehcay use
             //huwa hai then ye i guess IdentityBuilder ko register krta hai IServiceCollection mai   
-            services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(option => {
+                //Registring our token provider here
+                option.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";
+
+                //Locking user on 5 Incorrect attempts
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                option.Lockout.MaxFailedAccessAttempts = 5;
+
+                //option.SignIn.RequireConfirmedEmail = true;
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultTokenProviders()
+               //HERE We Register Our Own Token Provider class 
+              .AddTokenProvider<CustomEmailConfirmationTokenProvider<IdentityUser>>("CustomEmailConfirmation") ;
+
+
+            //Changing The Setting of our own token life span
+            services.Configure<CustomEmailConfirmationTokenProviderOptions>(o =>
+                    o.TokenLifespan = TimeSpan.FromDays(3));
+
+   
+
+            ////Changes token lifespan of all token types
+            //services.Configure<DataProtectionTokenProviderOptions>(o =>
+            //o.TokenLifespan = TimeSpan.FromHours(5));
+
+
+
+
             //services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddSingleton<IEmailSender, EmailSender>();
+
 
 
 
@@ -73,6 +103,10 @@ namespace BulkyBook
                 options.AppSecret = "58b7c55eed8490935dfee7319574c46a";
             });
 
+
+
+
+
             //using this service to get the data of logined user
           
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -86,8 +120,28 @@ namespace BulkyBook
                 options.Cookie.IsEssential = true;
             });
 
-            //Adding Payment GateWay
+
+            //Gettig  Stripe payment getway  settings from appSetting.json
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
+
+
+
+
+
+            //Gettig  email  settings from appSetting.json
+            //services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            var EmailConfig = Configuration.GetSection("EmailSettings").Get<EmailSettings>();
+
+            services.AddSingleton(EmailConfig);
+
+            services.AddSingleton<IEmailSender, EmailSender>();
+            //services.AddSingleton<IEmailSender1 ,EmailSender1>();
+
+
+
+
+
 
             // CHANGING THE DEFAULT PASSWORD VALIDATION FROM IDENTITY WITH DEFFERNT TYPES OF METHDS
             //////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,8 +170,8 @@ namespace BulkyBook
             //services.Configure<IdentityOptions>(hello3);
             /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
+            //CHANGING BY DEFULT SETTING OF OUR FRAMEWORK CLASS
+            //services.Configure<IdentityOptions>(option => option.Password.RequiredLength = 3);
 
 
 

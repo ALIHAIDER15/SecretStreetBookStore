@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
+using BulkyBook.DataAccess.Data;
 using BulkyBook.Models;
+using BulkyBook.Repository;
 using BulkyBook.Repository.IRepository;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -16,15 +20,24 @@ namespace BulkyBook.Areas.Admin.Controllers
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+
+        //Just for Testing
+        private readonly ApplicationDbContext _db;
+
+        public CategoryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
+
         }
 
 
         [HttpGet]
         public IActionResult Index()
         {
+
+
+
             return View();
         }
 
@@ -58,6 +71,9 @@ namespace BulkyBook.Areas.Admin.Controllers
             {
                 if (category.Id == 0)
                 {
+                    //DbTesting testing = new DbTesting(_db);
+                    //testing.AddCategory(category);
+
                     _unitOfWork.Category.Add(category);
                 }
                 else
@@ -65,6 +81,7 @@ namespace BulkyBook.Areas.Admin.Controllers
                     _unitOfWork.Category.Update(category);
                 }
                 _unitOfWork.Save();
+
                 return RedirectToAction(nameof(Index));
                 //return RedirectToAction("index"); <= Magic String
             }

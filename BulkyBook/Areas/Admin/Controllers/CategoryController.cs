@@ -11,6 +11,9 @@ using BulkyBook.Repository.IRepository;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -23,11 +26,17 @@ namespace BulkyBook.Areas.Admin.Controllers
 
         //Just for Testing
         private readonly ApplicationDbContext _db;
+        private readonly TwilioSettings _twilioOptions;
 
-        public CategoryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
+        public CategoryController(
+            IUnitOfWork unitOfWork, 
+            ApplicationDbContext db,
+            IOptions<TwilioSettings> twilioSettings )
         {
             _unitOfWork = unitOfWork;
             _db = db;
+            _twilioOptions = twilioSettings.Value;
+
 
         }
 
@@ -74,7 +83,24 @@ namespace BulkyBook.Areas.Admin.Controllers
                     //DbTesting testing = new DbTesting(_db);
                     //testing.AddCategory(category);
 
+                    ////Sending Message using Twilio 
+                    //TwilioClient.Init(_twilioOptions.AccountSid, _twilioOptions.AuthToken);
+                    //try
+                    //{
+                    //    var message = MessageResource.Create(
+                    //        body: "Order confirmed",
+                    //        from: new Twilio.Types.PhoneNumber(_twilioOptions.PhoneNumber),
+                    //         to: new Twilio.Types.PhoneNumber("+923459027536")
+                    //        ); 
+                    //}
+                    //catch (Exception ex)
+                    //{
+
+                    //};
+
                     _unitOfWork.Category.Add(category);
+
+
                 }
                 else
                 {

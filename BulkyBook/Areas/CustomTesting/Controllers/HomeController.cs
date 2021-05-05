@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BulkyBook.Areas.CustomTesting.Controllers
 {
-    [Area("Customesting")]
+    [Area("CustomeTesting")]
     public class HomeController : Controller
     {
 

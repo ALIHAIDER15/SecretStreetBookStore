@@ -68,13 +68,11 @@ namespace BulkyBook
             services.Configure<CustomEmailConfirmationTokenProviderOptions>(o =>
                     o.TokenLifespan = TimeSpan.FromDays(3));
 
-   
+
 
             ////Changes token lifespan of all token types
             //services.Configure<DataProtectionTokenProviderOptions>(o =>
             //o.TokenLifespan = TimeSpan.FromHours(5));
-
-
 
 
             //services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -137,6 +135,11 @@ namespace BulkyBook
 
             services.AddSingleton<IEmailSender, EmailSender>();
             //services.AddSingleton<IEmailSender1 ,EmailSender1>();
+
+
+
+            //Adding Twilio Settings
+            services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
 
 
 

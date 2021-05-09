@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Stripe;
 using BulkyBook.CustomTokenProviders;
 using BulkyBook.Models;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace BulkyBook
 {
@@ -141,7 +142,16 @@ namespace BulkyBook
             //Adding Twilio Settings
             services.Configure<TwilioSettings>(Configuration.GetSection("Twilio"));
 
+            //Adding BrainTree
+            services.Configure<BrainTreeSettings>(Configuration.GetSection("BrainTree"));
 
+
+
+            //Adding TempData 
+            services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
+
+            //Adding TempData 
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
 
 

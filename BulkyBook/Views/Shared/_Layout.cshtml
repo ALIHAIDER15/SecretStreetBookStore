@@ -18,7 +18,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BulkyBook</a>
+                <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">BulkyBook</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,37 +29,35 @@
 
 
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+
                         @if (User.IsInRole(SD.Role_Admin))
                         {
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Content Management
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="CoverType" asp-action="Index">CoverType</a>
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Content Management
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="CoverType" asp-action="Index">CoverType</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
 
-                        </div>
-                    </li>
-}
+                                </div>
+                            </li>
+                        }
 
                         @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
                         {
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            User/Company
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a>
-                        </div>
-                    </li>
-}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    User/Company
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a>
+                                </div>
+                            </li>
+                        }
 
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">
@@ -74,23 +72,27 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link " asp-area="Admin" asp-controller="BrainTree" asp-action="Index">BrainTree</a>
+                        </li>
+
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.ssShoppingCart) != null)
                         {
-                    <li style="color:white;">
-                        <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
-                            @{ var count = HttpContextAccessor.HttpContext.Session.GetInt32(SD.ssShoppingCart); }
-                            <i class="fas fa-shopping-cart"></i> &nbsp; (@count)
-                        </a>
-                    </li>
- }
-                else
-                {
-                    <li style="color:white;">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-shopping-cart"></i> &nbsp; (0)
-                        </a>
-                    </li>
-}
+                            <li style="color:white;">
+                                <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
+                                    @{ var count = HttpContextAccessor.HttpContext.Session.GetInt32(SD.ssShoppingCart); }
+                                    <i class="fas fa-shopping-cart"></i> &nbsp; (@count)
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li style="color:white;">
+                                <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart"></i> &nbsp; (0)
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -98,13 +100,28 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <partial name="_Notifications" />
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer bg-primary text-white-50">
         <div class="container">
-            &copy; 2020 - BulkyBook
+            <div class="row">
+                <div class="col-lg-6">
+                    &copy; 2020 - BulkyBook
+                </div>
+
+                <div class="col-lg-6 text-right" >   
+                    
+                    <custom-email my-email="alihaiderwm15@gmail.com" class="text-white-50"></custom-email>
+                      
+                  
+                </div>
+            </div>
+          
+
+       
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

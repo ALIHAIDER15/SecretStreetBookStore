@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using BulkyBook.DataAccess.Data;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
 using BulkyBook.Repository;
 using BulkyBook.Repository.IRepository;
 using BulkyBook.Utility;
@@ -42,13 +43,29 @@ namespace BulkyBook.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int productPage = 1)
         {
 
+            CategoryVM categoryVM = new CategoryVM()
+            {
+                Categories =  _unitOfWork.Category.GetAll()
+            };
 
+            var count = categoryVM.Categories.Count();
+            categoryVM.Categories = categoryVM.Categories.OrderBy(p => p.Name)
+                .Skip((productPage - 1) * 2).Take(2).ToList();
 
-            return View();
+            categoryVM.PagingInfo = new PagingInfo
+            {
+                CurrentPage = productPage,
+                ItemsPerPage = 2,
+                TotalItem = count,
+                urlParam = "/Admin/Category/Index?productPage=:"
+            };
+
+            return View(categoryVM);
         }
+    
 
 
         [HttpGet]
@@ -134,11 +151,13 @@ namespace BulkyBook.Areas.Admin.Controllers
             var objFromDb = _unitOfWork.Category.Get(id);
             if (objFromDb == null)
             {
+                TempData["Error"] = "Error deleting Category";
                 return Json(new { success = false, message ="Error while deleting" });
             }
 
             _unitOfWork.Category.Remove(objFromDb);
             _unitOfWork.Save();
+            TempData["Success"] = "Category successfully deleted";
             return Json(new { success = true, message = "Delete Successful" });
         }
 

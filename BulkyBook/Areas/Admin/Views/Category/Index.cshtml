@@ -48,7 +48,9 @@
                 </tr>
             }
         </table>
-        <div page-model="@Model.PagingInfo" page-classes-enabled="true" page-class="btn border"
+
+        //using custom TAG HELPER below , also passing values eg page-model , page-classes-enabled etc
+        <div page-model="@Model.PagingInfo"  page-classes-enabled="true" page-class="btn border"
              page-class-normal="btn btn-light" page-class-selected="btn btn-info active"
              class="btn-group float-right"></div>
         <br />
@@ -57,7 +59,7 @@
     {
         <p> No Categories Exists.</p>
     }
-</div>
+    </div>
 
 
 @section Scripts{

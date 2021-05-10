@@ -21,6 +21,7 @@ namespace BulkyBook.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var getway = _brain.GetGateway();
+            //Generating thr client token for authorization
             var clientToken = getway.ClientToken.Generate();
             ViewBag.ClientToken = clientToken;
             return View();
@@ -31,7 +32,9 @@ namespace BulkyBook.Areas.Admin.Controllers
         public IActionResult Index(IFormCollection collection)
         {
             Random rnd = new Random();
+            //Collecting the nonce from brain tree
             string nonceFromtheClient = collection["payment_method_nonce"];
+            //requesr object
             var request = new TransactionRequest
             {
                 Amount = rnd.Next(1, 100),

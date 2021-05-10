@@ -20,6 +20,8 @@ using Stripe;
 using BulkyBook.CustomTokenProviders;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using BulkyBook.DataAccess.Initializer;
+
 
 namespace BulkyBook
 {
@@ -150,9 +152,13 @@ namespace BulkyBook
             //Adding TempData 
             services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
 
+
             //Adding TempData 
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
+
+            //Adding DbInitializer
+            services.AddScoped<IDbInitializer, DbInitializer>();
 
 
 
@@ -192,7 +198,7 @@ namespace BulkyBook
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env , IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -216,6 +222,9 @@ namespace BulkyBook
             //app.UseMiddleware<TestMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //Db Initializer
+            dbInitializer.Initialize();
 
             app.UseEndpoints(endpoints =>
             {

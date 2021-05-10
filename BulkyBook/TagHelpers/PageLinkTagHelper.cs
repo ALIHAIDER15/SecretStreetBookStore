@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BulkyBook.TagHelpers
 {
+    //This attribute enable this taghelper to be use on div element 
     [HtmlTargetElement("div", Attributes = "page-model")]
     public class PageLinkTagHelper : TagHelper
     {
@@ -17,7 +18,7 @@ namespace BulkyBook.TagHelpers
         public ViewContext ViewContext { get; set; }
 
         public PagingInfo PageModel { get; set; }
-
+        //These properties will be used to pass values form view 
         public string PageAction { get; set; }
         public bool PageClassesEnabled { get; set; }
         public string PageClass { get; set; }
@@ -26,22 +27,28 @@ namespace BulkyBook.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            //Creating Div Tag
             TagBuilder result = new TagBuilder("div");
 
             for (int i = 1; i <= PageModel.TotalPage; i++)
             {
+                //Creating anchor Tag
                 TagBuilder tag = new TagBuilder("a");
+                //Creating url for href tag
                 string url = PageModel.urlParam.Replace(":", i.ToString());
                 tag.Attributes["href"] = url;
+                //adding classes
                 if (PageClassesEnabled)
                 {
                     tag.AddCssClass(PageClass);
                     tag.AddCssClass(i == PageModel.CurrentPage ? PageClassSelected : PageClassNormal);
                 }
+                //adding pagination numbering
                 tag.InnerHtml.Append(i.ToString());
+                //add buttons in div
                 result.InnerHtml.AppendHtml(tag);
             }
-
+            //Returning thr div containing buttons with acnhor tags
             output.Content.AppendHtml(result.InnerHtml);
         }
 
